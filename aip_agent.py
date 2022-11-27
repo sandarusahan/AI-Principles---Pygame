@@ -1,7 +1,6 @@
 import pygame
 import random
 import sys
-import time
 
 
 def display_time():
@@ -251,7 +250,7 @@ while running:
         player_agnt_rect.x += stat_velo
         screen.blit(player_agnt, player_agnt_rect)
         screen.blit(explotion, explotion_rect)
-        
+
         if is_collided:
             freeze_movement = True
             end_screen_counter += 1
