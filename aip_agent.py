@@ -11,9 +11,8 @@ def display_time():
     return current_time
 
 
-def collided(player, obs_rect):
-    # for obs_rect in obs_rects:
-    if player.colliderect(obs_rect):
+def collided(player_mask, obs_mask, offset):
+    if player_mask.overlap(obs_mask, offset):
         return True
     else:
         return False
@@ -80,7 +79,7 @@ def respawn_player():
     player_move_std()
     player_agnt_rect.x = 0
     player_agnt_rect.y = random.randint(150, 450)
-    earth_rect.y = random.randint(50, screen_h-50)
+    earth_rect.y = random.randint(50, screen_h-256)
     stat_velo = 2
     explosion_animation((screen_w+100, screen_h+100))
     start_time = pygame.time.get_ticks()
@@ -88,6 +87,21 @@ def respawn_player():
     freeze_movement = False
     is_collided = False
     display_time_score = 0
+
+
+def create_obstacle(image, cordinates):
+    surface = pygame.image.load(image).convert_alpha()
+    rect = surface.get_rect(topleft=(cordinates))
+    mask = pygame.mask.from_surface(surface)
+
+    return (surface, rect, mask)
+
+
+def calc_offset(player_rect, obs_rect):
+    offset_X = obs_rect.x - (player_rect.x)
+    offset_Y = obs_rect.y - (player_rect.y)
+
+    return (offset_X, offset_Y)
 
 
 # Intialize the pygame
@@ -111,21 +125,15 @@ frame_rate = 60
 background = pygame.image.load('space_bak2.png').convert()
 
 # Obstacles
-obs_plnt = pygame.image.load('planet.png').convert_alpha()
-obs_plnt_rect = obs_plnt.get_rect(topleft=(350, 260))
-obs_plnt_rect1 = obs_plnt.get_rect(topleft=(250, 60))
-obs_plnt1 = pygame.image.load('planet_1.png').convert_alpha()
-obs_plnt1_rect = obs_plnt.get_rect(topleft=(440, 467))
-obs_plnt1_rect1 = obs_plnt.get_rect(topleft=(340, 467))
-obs_ast = pygame.image.load('asteroid.png').convert_alpha()
-obs_ast_rect = obs_plnt.get_rect(topleft=(840, 276))
-obs_ast_rect1 = obs_plnt.get_rect(topleft=(840, 76))
-obs_ast1 = pygame.image.load('asteroid_1.png').convert_alpha()
-obs_ast1_rect = obs_plnt.get_rect(topleft=(990, 145))
-obs_ast1_rect1 = obs_plnt.get_rect(topleft=(390, 145))
+obs_plnt_1 = create_obstacle('planet.png', (screen_w*0.15, screen_h*0.2))
+obs_plnt_2 = create_obstacle('planet.png', (screen_w*0.8, screen_h*0.275))
+obs_plnt_3 = create_obstacle('planet_1.png', (screen_w*0.3, screen_h*0.450))
+obs_plnt_4 = create_obstacle('planet_1.png', (screen_w*0.7, screen_h*0.525))
+obs_ast_1 = create_obstacle('asteroid.png', (screen_w*0.5, screen_h*0.6))
+obs_ast_2 = create_obstacle('asteroid.png', (screen_w*0.6, screen_h*0.1))
+obs_ast_3 = create_obstacle('asteroid_1.png', (screen_w*0.25, screen_h*0.7))
+obs_ast_4 = create_obstacle('asteroid_1.png', (screen_w*0.4, screen_h*0.25))
 
-obs_list = [obs_plnt_rect, obs_plnt_rect1, obs_plnt1_rect, obs_plnt1_rect1,
-            obs_ast_rect, obs_ast_rect1, obs_ast1_rect, obs_ast1_rect1]
 # Goal
 earth_index = 0
 earth1 = pygame.image.load('earth.png').convert_alpha()
@@ -134,6 +142,7 @@ earth_ani = [earth1, earth2]
 earth = earth_ani[earth_index]
 earth_rect = earth.get_rect(
     center=((screen_w), random.randint(256, screen_h-256)))
+earth_mask = pygame.mask.from_surface(earth)
 
 # Player
 playerX = 10
@@ -149,6 +158,8 @@ player_agnt_dcl = pygame.image.load('spacecraft_move_down.png').convert_alpha()
 
 player_agnt = player_std
 player_agnt_rect = player_agnt.get_rect(center=(playerX, playerY))
+
+player_agent_mask = pygame.mask.from_surface(player_agnt)
 
 # End Screen
 player_agnt_up = pygame.image.load('spacecraft.png').convert_alpha()
@@ -190,14 +201,14 @@ while running:
     screen.blit(background, (0, 0))
 
     # Obstacles
-    screen.blit(obs_ast, obs_ast_rect)
-    screen.blit(obs_ast, obs_ast_rect1)
-    screen.blit(obs_ast1, obs_ast1_rect)
-    screen.blit(obs_ast1, obs_ast1_rect1)
-    screen.blit(obs_plnt, obs_plnt_rect)
-    screen.blit(obs_plnt, obs_plnt_rect1)
-    screen.blit(obs_plnt1, obs_plnt1_rect)
-    screen.blit(obs_plnt1, obs_plnt1_rect1)
+    screen.blit(obs_ast_1[0], obs_ast_1[1])
+    screen.blit(obs_ast_2[0], obs_ast_2[1])
+    screen.blit(obs_ast_3[0], obs_ast_3[1])
+    screen.blit(obs_ast_4[0], obs_ast_4[1])
+    screen.blit(obs_plnt_1[0], obs_plnt_1[1])
+    screen.blit(obs_plnt_2[0], obs_plnt_2[1])
+    screen.blit(obs_plnt_3[0], obs_plnt_3[1])
+    screen.blit(obs_plnt_4[0], obs_plnt_4[1])
 
     # Goal - Earth
     earth_animation()
@@ -258,15 +269,18 @@ while running:
             stat_velo = 0
             if end_screen_counter >= 30:
                 game_active = False
-                game_message = 'Game Over - Collision'
-        if not is_collided:
-            if collided(player_agnt_rect, obs_plnt_rect) or collided(player_agnt_rect, obs_plnt_rect1) or collided(player_agnt_rect, obs_plnt1_rect) or collided(player_agnt_rect, obs_plnt1_rect1) or collided(player_agnt_rect, obs_ast_rect) or collided(player_agnt_rect, obs_ast_rect1) or collided(player_agnt_rect, obs_ast1_rect) or collided(player_agnt_rect, obs_ast1_rect1):
-                display_time_score = time_score
-                is_collided = True
 
-        if collided(player_agnt_rect, earth_rect):
-            game_active = False
-            game_message = 'Goal Reached !!'
+        if not is_collided:
+            if collided(player_agent_mask, obs_plnt_1[2], calc_offset(player_agnt_rect, obs_plnt_1[1])) or collided(player_agent_mask, obs_plnt_2[2], calc_offset(player_agnt_rect, obs_plnt_2[1])) or collided(player_agent_mask, obs_plnt_3[2], calc_offset(player_agnt_rect, obs_plnt_3[1])) or collided(player_agent_mask, obs_plnt_4[2], calc_offset(player_agnt_rect, obs_plnt_4[1])) or collided(player_agent_mask, obs_ast_1[2], calc_offset(player_agnt_rect, obs_ast_1[1])) or collided(player_agent_mask, obs_ast_2[2], calc_offset(player_agnt_rect, obs_ast_2[1])) or collided(player_agent_mask, obs_ast_3[2], calc_offset(player_agnt_rect, obs_ast_3[1])) or collided(player_agent_mask, obs_ast_4[2], calc_offset(player_agnt_rect, obs_ast_4[1])):
+                
+                display_time_score = time_score
+                game_message = 'Game Over - Collision'
+                is_collided = True
+        if not is_collided:
+            if collided(player_agent_mask, earth_mask, calc_offset(player_agnt_rect, earth_rect)):
+                display_time_score = time_score
+                game_message = 'Goal Reached !!'
+                game_active = False
     else:
         screen.fill((94, 129, 162))
         screen.blit(player_agnt_up, player_agnt_up_rect)
