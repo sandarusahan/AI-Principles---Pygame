@@ -13,7 +13,6 @@ def display_time():
 
 def collided(player_mask, obs_mask, offset):
     if player_mask.overlap(obs_mask, offset):
-        print(player_mask.overlap(obs_mask, offset))
         return True
     else:
         return False
@@ -51,13 +50,13 @@ def player_move_fwd():
 
 def player_move_up():
     global player_agnt, playerY_change
-    playerY_change = -2
+    playerY_change = -1
     player_agnt = player_agnt_incl
 
 
 def player_move_down():
     global player_agnt, playerY_change
-    playerY_change = 2
+    playerY_change = 1
     player_agnt = player_agnt_dcl
 
 
@@ -240,7 +239,7 @@ while running:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     playerX_change = 0
                     playerY_change = 0
-                    player_move_std()
+                    # player_move_std()
         else:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
@@ -284,8 +283,6 @@ while running:
                 display_time_score = time_score
                 game_message = 'Goal Reached !!'
                 game_active = False
-        if collided(player_agent_collide_rect_mask, obs_plnt_1[2], calc_offset(player_agnt_rect, obs_plnt_1[1])):
-            print('Collideeeee')
     else:
         screen.fill((94, 129, 162))
         screen.blit(player_agnt_up, player_agnt_up_rect)
