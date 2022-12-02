@@ -5,7 +5,7 @@ import sys
 
 def display_time():
     current_time = (pygame.time.get_ticks() - start_time)/1000
-    time_surf = font.render(f'Time: {current_time}', False, (64, 64, 64))
+    time_surf = font.render(f'Time: {current_time}', False, 'white')
     time_rect = time_surf.get_rect(center=(screen_w/2, 50))
     screen.blit(time_surf, time_rect)
     return current_time
@@ -13,6 +13,7 @@ def display_time():
 
 def collided(player_mask, obs_mask, offset):
     if player_mask.overlap(obs_mask, offset):
+        print(player_mask.overlap(obs_mask, offset))
         return True
     else:
         return False
@@ -80,7 +81,7 @@ def respawn_player():
     player_agnt_rect.x = 0
     player_agnt_rect.y = random.randint(150, 450)
     earth_rect.y = random.randint(50, screen_h-256)
-    stat_velo = 2
+    stat_velo = 0
     explosion_animation((screen_w+100, screen_h+100))
     start_time = pygame.time.get_ticks()
     end_screen_counter = 0
@@ -119,7 +120,7 @@ font = pygame.font.Font(pygame.font.get_default_font(), 30)
 
 game_active = False
 start_time = 0
-stat_velo = 2
+stat_velo = 0
 frame_rate = 60
 # Background
 background = pygame.image.load('space_bak2.png').convert()
@@ -149,7 +150,7 @@ playerX = 10
 playerY = random.randint(150, 450)
 playerX_change = 0
 playerY_change = 0
-
+collide_rect_clr = (0,0,255,100)
 player_std = pygame.image.load('spacecraft_std.png').convert_alpha()
 player_agnt_slw = pygame.image.load('spacecraft_slow.png').convert_alpha()
 player_agnt_move = pygame.image.load('spacecraft_move.png').convert_alpha()
@@ -161,6 +162,8 @@ player_agnt_rect = player_agnt.get_rect(center=(playerX, playerY))
 
 player_agent_mask = pygame.mask.from_surface(player_agnt)
 
+player_agent_collide_rect = pygame.draw.rect(player_agnt, collide_rect_clr, pygame.Rect(0, 0, 64, 64), 2)
+player_agent_collide_rect_mask = pygame.mask.Mask((player_agnt_rect.width,player_agnt_rect.height), True)
 # End Screen
 player_agnt_up = pygame.image.load('spacecraft.png').convert_alpha()
 player_agnt_up = pygame.transform.rotozoom(player_agnt_up, 90, 2)
@@ -281,13 +284,15 @@ while running:
                 display_time_score = time_score
                 game_message = 'Goal Reached !!'
                 game_active = False
+        if collided(player_agent_collide_rect_mask, obs_plnt_1[2], calc_offset(player_agnt_rect, obs_plnt_1[1])):
+            print('Collideeeee')
     else:
         screen.fill((94, 129, 162))
         screen.blit(player_agnt_up, player_agnt_up_rect)
         screen.blit(message, message_rect)
 
         time_score_surf = font.render(
-            f'Time: {display_time_score}s', False, 'black')
+            f'Time: {display_time_score}s', False, 'white')
         time_score_surf_rect = time_score_surf.get_rect(
             center=(screen_w/2, 150))
 
