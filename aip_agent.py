@@ -1,5 +1,5 @@
 import pygame
-import random
+import random , numpy
 import sys
 
 
@@ -103,6 +103,18 @@ def calc_offset(player_rect, obs_rect):
 
     return (offset_X, offset_Y)
 
+def drawGrid():
+    global obs_map_arr, blockSize
+    blockSize #Set the size of the grid block
+    
+    for x in range(0, screen_w, blockSize):
+        for y in range(0, screen_h, blockSize):
+            rect = pygame.Rect(x, y, blockSize, blockSize)
+            if not (rect.colliderect(obs_ast_1[1]) or obs_ast_2[1].colliderect(rect) or obs_ast_3[1].colliderect(rect) or obs_ast_4[1].colliderect(rect) or obs_plnt_1[1].colliderect(rect) or obs_plnt_2[1].colliderect(rect) or obs_plnt_3[1].colliderect(rect) or obs_plnt_4[1].colliderect(rect)):
+                pygame.draw.rect(gridSurface, 'white', rect, 1)
+            else:
+                pygame.draw.rect(gridSurface, 'white', rect)
+                obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
 
 # Intialize the pygame
 pygame.init()
@@ -116,13 +128,17 @@ screen_h = 600
 # create the screen
 screen = pygame.display.set_mode((screen_w, screen_h))
 font = pygame.font.Font(pygame.font.get_default_font(), 30)
-
 game_active = False
 start_time = 0
 stat_velo = 0
 frame_rate = 60
 # Background
 background = pygame.image.load('space_bak2.png').convert()
+
+# Second surface for the grid
+blockSize = 30
+gridSurface = pygame.Surface((screen_w, screen_h),pygame.SRCALPHA, 32)
+obs_map_arr = numpy.zeros((int(screen_h/blockSize), int(screen_w/blockSize)))
 
 # Obstacles
 obs_plnt_1 = create_obstacle('planet.png', (screen_w*0.15, screen_h*0.2))
@@ -161,13 +177,11 @@ player_agnt_rect = player_agnt.get_rect(center=(playerX, playerY))
 
 player_agent_mask = pygame.mask.from_surface(player_agnt)
 
-player_agent_collide_rect = pygame.draw.rect(player_agnt, collide_rect_clr, pygame.Rect(0, 0, 64, 64), 2)
-player_agent_collide_rect_mask = pygame.mask.Mask((player_agnt_rect.width,player_agnt_rect.height), True)
 # End Screen
 player_agnt_up = pygame.image.load('spacecraft.png').convert_alpha()
 player_agnt_up = pygame.transform.rotozoom(player_agnt_up, 90, 2)
 player_agnt_up_rect = player_agnt_up.get_rect(center=(538, 300))
-message = font.render('Press R to run', False, 'black')
+message = font.render('Press R to run      Press G to show grid', False, 'black')
 message_rect = message.get_rect(bottomleft=(50, 550))
 time_score = 0
 game_message = ''
@@ -192,6 +206,8 @@ end_screen_counter = 0
 freeze_movement = False
 is_collided = False
 display_time_score = 0
+
+show_grid_flag = False
 # Game Loop
 running = True
 while running:
@@ -215,6 +231,8 @@ while running:
     # Goal - Earth
     earth_animation()
     screen.blit(earth, earth_rect)
+
+    drawGrid()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -235,6 +253,8 @@ while running:
                         player_move_down()
                 if event.key == pygame.K_r:
                     respawn_player()
+                if event.key == pygame.K_g:
+                    show_grid_flag = not show_grid_flag
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     playerX_change = 0
@@ -263,7 +283,9 @@ while running:
         player_agnt_rect.x += stat_velo
         screen.blit(player_agnt, player_agnt_rect)
         screen.blit(explotion, explotion_rect)
-
+        if show_grid_flag:
+            screen.blit(gridSurface,(0,0))
+        
         if is_collided:
             freeze_movement = True
             end_screen_counter += 1
@@ -299,6 +321,7 @@ while running:
         screen.blit(game_msg_surf, game_msg_surf_rect)
         if time_score > 0:
             screen.blit(time_score_surf, time_score_surf_rect)
+
 
     pygame.display.update()
     clock.tick(frame_rate)
