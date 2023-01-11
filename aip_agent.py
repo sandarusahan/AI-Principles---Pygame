@@ -1,7 +1,9 @@
 import pygame
 import random , numpy
 import sys
-
+import UCS
+import tracemalloc
+import time
 
 def display_time():
     current_time = (pygame.time.get_ticks() - start_time)/1000
@@ -60,7 +62,7 @@ def player_move_down():
     player_agnt = player_agnt_dcl
 
 
-def player_move_slow():
+def player_move_back():
     global player_agnt, playerX_change
     playerX_change = -1
     player_agnt = player_agnt_slw
@@ -72,13 +74,13 @@ def player_move_std():
 
 
 def respawn_player():
-    global playerX_change, playerY_change, start_time, stat_velo, end_screen_counter, freeze_movement, is_collided, display_time_score
+    global playerX_change, playerY_change, start_time, stat_velo, end_screen_counter, freeze_movement, is_collided, display_time_score, auto_pilot, path_find_flag
 
     playerX_change = 0
     playerY_change = 0
     player_move_std()
-    player_agnt_rect.x = 0
-    player_agnt_rect.y = random.randint(150, 450)
+    player_agnt_rect.x = 30
+    player_agnt_rect.y = 330
     earth_rect.y = random.randint(50, screen_h-256)
     stat_velo = 0
     explosion_animation((screen_w+100, screen_h+100))
@@ -87,6 +89,8 @@ def respawn_player():
     freeze_movement = False
     is_collided = False
     display_time_score = 0
+    auto_pilot = False
+    path_find_flag = True
 
 
 def create_obstacle(image, cordinates):
@@ -110,11 +114,65 @@ def drawGrid():
     for x in range(0, screen_w, blockSize):
         for y in range(0, screen_h, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
-            if not (rect.colliderect(obs_ast_1[1]) or obs_ast_2[1].colliderect(rect) or obs_ast_3[1].colliderect(rect) or obs_ast_4[1].colliderect(rect) or obs_plnt_1[1].colliderect(rect) or obs_plnt_2[1].colliderect(rect) or obs_plnt_3[1].colliderect(rect) or obs_plnt_4[1].colliderect(rect)):
-                pygame.draw.rect(gridSurface, 'white', rect, 1)
-            else:
+            if(x == 0): 
                 pygame.draw.rect(gridSurface, 'white', rect)
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
+            elif(x == screen_w-blockSize):
+                pygame.draw.rect(gridSurface, 'white', rect)
+                obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
+            elif(y == 0):
+                pygame.draw.rect(gridSurface, 'white', rect)
+                obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
+            elif(y == screen_h-blockSize):
+                pygame.draw.rect(gridSurface, 'white', rect)
+                obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
+            elif (rect.colliderect(obs_ast_1[1]) or obs_ast_2[1].colliderect(rect) or obs_ast_3[1].colliderect(rect) or obs_ast_4[1].colliderect(rect) or obs_plnt_1[1].colliderect(rect) or obs_plnt_2[1].colliderect(rect) or obs_plnt_3[1].colliderect(rect) or obs_plnt_4[1].colliderect(rect)):
+                pygame.draw.rect(gridSurface, 'white', rect)
+                obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
+            else:
+                pygame.draw.rect(gridSurface, 'white', rect, 1)
+    
+    return obs_map_arr
+
+def move_player(x, y):
+    # player_agnt_rect.x = x
+    # player_agnt_rect.y = y
+    # return True
+    global playerX_change ,playerY_change
+    is_in_pos = False
+    if player_agnt_rect.x < x:
+        is_in_pos = False
+        player_move_fwd()
+    elif player_agnt_rect.y < y:
+        is_in_pos = False
+        player_move_down()
+    elif player_agnt_rect.y > y:
+        is_in_pos = False
+        player_move_up()
+    elif player_agnt_rect.x > x:
+        is_in_pos = False
+        player_move_back()
+    else:
+        if player_agnt_rect.x == x and player_agnt_rect.y == y:
+            playerX_change = 0
+            playerY_change = 0
+            is_in_pos = True
+        else:
+            is_in_pos = False
+    return is_in_pos
+
+def plan_path():
+    global auto_path_x, auto_path_y, path_found
+    tracemalloc.start()
+    start = time.time()
+    auto_path_x, auto_path_y, path_found = ucs.start_with_ucs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
+    print(auto_path_x, auto_path_y, path_found)
+    end = time.time()
+    print("time elapsed", end - start)
+    
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"Memory usage: {current / 10**6}MB; Peak memory: {peak / 10**6}MB")
+    tracemalloc.stop()
 
 # Intialize the pygame
 pygame.init()
@@ -143,12 +201,12 @@ obs_map_arr = numpy.zeros((int(screen_h/blockSize), int(screen_w/blockSize)))
 # Obstacles
 obs_plnt_1 = create_obstacle('planet.png', (screen_w*0.15, screen_h*0.2))
 obs_plnt_2 = create_obstacle('planet.png', (screen_w*0.8, screen_h*0.275))
-obs_plnt_3 = create_obstacle('planet_1.png', (screen_w*0.3, screen_h*0.450))
-obs_plnt_4 = create_obstacle('planet_1.png', (screen_w*0.7, screen_h*0.525))
+obs_plnt_3 = create_obstacle('planet_1.png', (screen_w*0.4, screen_h*0.650))
+obs_plnt_4 = create_obstacle('planet_1.png', (screen_w*0.7, screen_h*0.625))
 obs_ast_1 = create_obstacle('asteroid.png', (screen_w*0.5, screen_h*0.6))
 obs_ast_2 = create_obstacle('asteroid.png', (screen_w*0.6, screen_h*0.1))
 obs_ast_3 = create_obstacle('asteroid_1.png', (screen_w*0.25, screen_h*0.7))
-obs_ast_4 = create_obstacle('asteroid_1.png', (screen_w*0.4, screen_h*0.25))
+obs_ast_4 = create_obstacle('asteroid_1.png', (screen_w*0.4, screen_h*0.45))
 
 # Goal
 earth_index = 0
@@ -156,13 +214,14 @@ earth1 = pygame.image.load('earth.png').convert_alpha()
 earth2 = pygame.image.load('earth_flip.png').convert_alpha()
 earth_ani = [earth1, earth2]
 earth = earth_ani[earth_index]
-earth_rect = earth.get_rect(
-    center=((screen_w), random.randint(256, screen_h-256)))
+earth_rect = earth.get_rect(center=((screen_w, screen_h/3)))
+    # center=((screen_w), random.randint(256, screen_h-256)))
 earth_mask = pygame.mask.from_surface(earth)
 
 # Player
-playerX = 10
-playerY = random.randint(150, 450)
+
+playerX = 30
+playerY = 330
 playerX_change = 0
 playerY_change = 0
 collide_rect_clr = (0,0,255,100)
@@ -208,6 +267,14 @@ is_collided = False
 display_time_score = 0
 
 show_grid_flag = False
+path_find_flag = True
+# Instantiating UCS algorithn class
+ucs = UCS.UCS_Algorithm(1, 1)
+auto_path_x = []
+auto_path_y = []
+auto_path_inc = 0
+auto_pilot = False
+
 # Game Loop
 running = True
 while running:
@@ -231,8 +298,9 @@ while running:
     # Goal - Earth
     earth_animation()
     screen.blit(earth, earth_rect)
-
-    drawGrid()
+    
+    obstcle_map_arr = drawGrid()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -244,7 +312,7 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if not freeze_movement:
                     if event.key == pygame.K_LEFT:
-                        player_move_slow()
+                        player_move_back()
                     if event.key == pygame.K_RIGHT:
                         player_move_fwd()
                     if event.key == pygame.K_UP:
@@ -255,6 +323,16 @@ while running:
                     respawn_player()
                 if event.key == pygame.K_g:
                     show_grid_flag = not show_grid_flag
+                if event.key == pygame.K_a:
+                    if path_find_flag:
+                        plan_path()
+                        auto_path_inc = 0
+                        path_find_flag = False
+                    
+                    if path_found:
+                        auto_pilot = True
+                        print("Auto pilot on")
+                    
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     playerX_change = 0
@@ -305,6 +383,11 @@ while running:
                 display_time_score = time_score
                 game_message = 'Goal Reached !!'
                 game_active = False
+        if auto_path_inc >= len(auto_path_x):
+            auto_path_inc = 0
+        if len(auto_path_x) > 0 and auto_pilot:
+            if move_player(auto_path_x[int(auto_path_inc)]*blockSize,auto_path_y[int(auto_path_inc)]*blockSize):
+                auto_path_inc += 1
     else:
         screen.fill((94, 129, 162))
         screen.blit(player_agnt_up, player_agnt_up_rect)
@@ -322,6 +405,6 @@ while running:
         if time_score > 0:
             screen.blit(time_score_surf, time_score_surf_rect)
 
-
+        
     pygame.display.update()
     clock.tick(frame_rate)
