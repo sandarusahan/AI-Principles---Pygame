@@ -1,6 +1,6 @@
 import math
 
-class UCS_Algorithm:
+class AStar:
     
     def __init__(self, resolution, robot_radius):
         
@@ -18,7 +18,6 @@ class UCS_Algorithm:
         self.y_width = None
 
         self.motion = self.get_motion_model_4n()
-        # self.motion = self.get_motion_model_8n()
         
     class Node:
         def __init__(self, x, y, cost, parent_index):
@@ -28,7 +27,7 @@ class UCS_Algorithm:
             self.parent_index = parent_index  # index of previous Node
 
     
-    def start_with_ucs(self, sx, sy, gx, gy, obs_map_arr):
+    def start_with_astar(self, sx, sy, gx, gy, obs_map_arr):
         goal_reached = False
         self.calc_obstacle_map(obs_map_arr)
         start_node = self.Node(self.calc_xy_index(sx, self.min_x),
@@ -40,11 +39,8 @@ class UCS_Algorithm:
         open_set[self.calc_index(start_node)] = start_node
 
         while 1:
-            if len(open_set) > 0:
-                c_id = min(open_set, key=lambda o: open_set[o].cost)
-            else:
-                print("No path found")
-                return [],[],False
+            
+            c_id = min(open_set, key=lambda o: open_set[o].cost + self.calc_heuristic_m(goal_node, open_set[ o]))
             current = open_set[c_id]
             # checking if goal is reached, break loop if it does
             if current.x == goal_node.x and current.y == goal_node.y:
@@ -82,21 +78,39 @@ class UCS_Algorithm:
                 if not self.verify_node(node):
                     continue
 ######################Graph Search ##########################
-                # if n_id not in open_set:   
-                #     open_set[n_id] = node
-                # else:
-                #     if open_set[n_id].cost > node.cost:  
-                #         # This path is the best until now. record it!
-                #         open_set[n_id] = node
+                if n_id not in open_set:   
+                    open_set[n_id] = node
+                else:
+                    if open_set[n_id].cost > node.cost:  
+                        # This path is the best until now. record it!
+                        open_set[n_id] = node
 ######################Tree Search ##########################s                
-                open_set[n_id] = node
-                closed_set[n_id] = node
-                node.parent = current
+                # open_set[n_id] = node
+                # closed_set[n_id] = node
+                # node.parent = current
+
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()
         ry.reverse()
         return rx, ry, goal_reached
+
+    @staticmethod
+    ## calculate heuristic value by using Pythagorean Theorem - Euclidean Heuristic
+    def calc_heuristic_e(n1, n2):
+        # weight of the heuristic
+        w = 1
+        d = w * math.hypot(n1.x - n2.x, n1.y - n2.y)
+        return d
+
+    @staticmethod
+    ## calculate heuristic value by using Pythagorean Theorem - Euclidean Heuristic
+    def calc_heuristic_m(n1, n2):
+        # weight of the heuristic
+        w = 1
+        d = w * (math.fabs(n1.x - n2.x) + math.fabs(n1.y - n2.y))
+        return d
+
     @staticmethod
     def get_motion_model_4n():
         """
