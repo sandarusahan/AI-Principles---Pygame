@@ -164,10 +164,10 @@ def move_player(x, y):
     return is_in_pos
 
 def plan_path():
-    global auto_path_x, auto_path_y, path_found, time_elapsed, current_mem, peak_mem
+    global auto_path_x, auto_path_y, path_found, time_elapsed, current_mem, peak_mem, algorithm
     tracemalloc.start()
     start = time.time()
-    auto_path_x, auto_path_y, path_found = ucs.start_with_ucs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
+    auto_path_x, auto_path_y, path_found, algorithm = ucs.start_with_ucs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
     # print(auto_path_x, auto_path_y, path_found)
     end = time.time()
     time_elapsed = end - start
@@ -254,7 +254,7 @@ f = open("aip_records.csv", "a")
 path_found = False
 time_elapsed = current_mem = peak_mem = 0
 gen_rec_flag = True
-
+algorithm = ""
 # Explotion
 explotion_index = 0
 exp1 = pygame.image.load('explotion1.png').convert_alpha()
@@ -415,7 +415,7 @@ while running:
         if time_score > 0:
             screen.blit(time_score_surf, time_score_surf_rect)
             if gen_rec_flag:
-                f.write("\n"+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+","+"UCS,"+str(path_found)+","+ str(display_time_score)+","+str(time_elapsed)+","+str(current_mem/10**6)+","+str(peak_mem/10**6))
+                f.write("\n"+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+","+algorithm+","+str(path_found)+","+ str(display_time_score)+","+str(time_elapsed)+","+str(current_mem/10**6)+","+str(peak_mem/10**6))
                 gen_rec_flag = False
 
         
