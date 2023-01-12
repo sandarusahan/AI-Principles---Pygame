@@ -40,8 +40,11 @@ class UCS_Algorithm:
         open_set[self.calc_index(start_node)] = start_node
 
         while 1:
-            
-            c_id = min(open_set, key=lambda o: open_set[o].cost)
+            if len(open_set) > 0:
+                c_id = min(open_set, key=lambda o: open_set[o].cost)
+            else:
+                print("No path found")
+                return [],[],False
             current = open_set[c_id]
             # checking if goal is reached, break loop if it does
             if current.x == goal_node.x and current.y == goal_node.y:
