@@ -78,16 +78,16 @@ class AStar:
                 if not self.verify_node(node):
                     continue
 ######################Graph Search ##########################
-                # if n_id not in open_set:   
-                #     open_set[n_id] = node
-                # else:
-                #     if open_set[n_id].cost > node.cost:  
-                #         # This path is the best until now. record it!
-                #         open_set[n_id] = node
+                if n_id not in open_set:   
+                    open_set[n_id] = node
+                else:
+                    if open_set[n_id].cost > node.cost:  
+                        # This path is the best until now. record it!
+                        open_set[n_id] = node
 ######################Tree Search ##########################s                
-                open_set[n_id] = node
-                closed_set[n_id] = node
-                node.parent = current
+                # open_set[n_id] = node
+                # closed_set[n_id] = node
+                # node.parent = current
 
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
