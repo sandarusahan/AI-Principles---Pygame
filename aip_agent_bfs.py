@@ -3,7 +3,7 @@ import random, numpy
 import sys
 import BFS
 import tracemalloc
-import time
+import time, datetime
 
 def display_time():
     current_time = (pygame.time.get_ticks() - start_time)/1000
@@ -163,16 +163,17 @@ def move_player(x, y):
     return is_in_pos
 
 def plan_path():
-    global auto_path_x, auto_path_y, path_found
+    global auto_path_x, auto_path_y, path_found,time_elapsed, current_mem, peak_mem, algorithm
     tracemalloc.start()
     start = time.time()
     auto_path_x, auto_path_y, path_found = bfs.start_with_bfs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
     print(auto_path_x, auto_path_y, path_found)
     end = time.time()
+    time_elapsed = end - start
     print("time elapsed", end - start)
     
-    current, peak = tracemalloc.get_traced_memory()
-    print(f"Memory usage: {current / 10**6}MB; Peak memory: {peak / 10**6}MB")
+    current_mem, peak_mem = tracemalloc.get_traced_memory()
+    print(f"Memory usage: {current_mem / 10**6}MB; Peak memory: {peak_mem / 10**6}MB")
     tracemalloc.stop()
 
 # Intialize the pygame
@@ -245,6 +246,15 @@ message = font.render('Press R to run      Press G to show grid', False, 'black'
 message_rect = message.get_rect(bottomleft=(50, 550))
 time_score = 0
 game_message = ''
+
+# Generate records
+f = open("aip_records.csv", "a")
+#f.write("Date-Time,Algorithm,Goal found,Total time,Time elapsed,Memory usage,Peak Memory usage")
+path_found = False
+time_elapsed = current_mem = peak_mem = 0
+gen_rec_flag = True
+algorithm = "BFS"
+
 
 # Explotion
 explotion_index = 0
@@ -405,6 +415,10 @@ while running:
         screen.blit(game_msg_surf, game_msg_surf_rect)
         if time_score > 0:
             screen.blit(time_score_surf, time_score_surf_rect)
+            if gen_rec_flag:
+                f.write("\n"+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+","+algorithm+","+str(path_found)+","+ str(display_time_score)+","+str(time_elapsed)+","+str(current_mem/10**6)+","+str(peak_mem/10**6))
+                gen_rec_flag = False
+
 
         
     pygame.display.update()
