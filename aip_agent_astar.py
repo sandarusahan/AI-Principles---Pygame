@@ -1,9 +1,12 @@
+import datetime
 import pygame
-import random, numpy
+import random
+import numpy
 import sys
 import AStar
 import tracemalloc
 import time
+
 
 def display_time():
     current_time = (pygame.time.get_ticks() - start_time)/1000
@@ -108,23 +111,24 @@ def calc_offset(player_rect, obs_rect):
 
     return (offset_X, offset_Y)
 
+
 def drawGrid():
     global obs_map_arr, blockSize
-    blockSize #Set the size of the grid block
-    
+    blockSize  # Set the size of the grid block
+
     for x in range(0, screen_w, blockSize):
         for y in range(0, screen_h, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
-            if(x == 0): 
+            if (x == 0):
                 pygame.draw.rect(gridSurface, 'white', rect)
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
-            elif(x == screen_w-blockSize):
+            elif (x == screen_w-blockSize):
                 pygame.draw.rect(gridSurface, 'white', rect)
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
-            elif(y == 0):
+            elif (y == 0):
                 pygame.draw.rect(gridSurface, 'white', rect)
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
-            elif(y == screen_h-blockSize):
+            elif (y == screen_h-blockSize):
                 pygame.draw.rect(gridSurface, 'white', rect)
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
             elif (rect.colliderect(obs_ast_1[1]) or obs_ast_2[1].colliderect(rect) or obs_ast_3[1].colliderect(rect) or obs_ast_4[1].colliderect(rect) or obs_plnt_1[1].colliderect(rect) or obs_plnt_2[1].colliderect(rect) or obs_plnt_3[1].colliderect(rect) or obs_plnt_4[1].colliderect(rect)):
@@ -132,14 +136,15 @@ def drawGrid():
                 obs_map_arr[int(y/blockSize)][int(x/blockSize)] = 1
             else:
                 pygame.draw.rect(gridSurface, 'white', rect, 1)
-    
+
     return obs_map_arr
+
 
 def move_player(x, y):
     # player_agnt_rect.x = x
     # player_agnt_rect.y = y
     # return True
-    global playerX_change ,playerY_change
+    global playerX_change, playerY_change
     is_in_pos = False
     if player_agnt_rect.x < x:
         is_in_pos = False
@@ -162,18 +167,23 @@ def move_player(x, y):
             is_in_pos = False
     return is_in_pos
 
+
 def plan_path():
-    global auto_path_x, auto_path_y, path_found
+    global auto_path_x, auto_path_y, path_found, path_found, time_elapsed, current_mem, peak_mem
     tracemalloc.start()
     start = time.time()
-    auto_path_x, auto_path_y, path_found = ucs.start_with_astar(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
+    auto_path_x, auto_path_y, path_found = ucs.start_with_astar(int(player_agnt_rect.x/blockSize), int(
+        player_agnt_rect.y/blockSize), int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
     print(auto_path_x, auto_path_y, path_found)
     end = time.time()
-    print("time elapsed", end - start)
-    
-    current, peak = tracemalloc.get_traced_memory()
-    print(f"Memory usage: {current / 10**6}MB; Peak memory: {peak / 10**6}MB")
+    time_elapsed = end - start
+    print("time elapsed", time_elapsed)
+
+    current_mem, peak_mem = tracemalloc.get_traced_memory()
+    print(
+        f"Memory usage: {current_mem / 10**6}MB; Peak memory: {peak_mem / 10**6}MB")
     tracemalloc.stop()
+
 
 # Intialize the pygame
 pygame.init()
@@ -196,7 +206,7 @@ background = pygame.image.load('space_bak2.png').convert()
 
 # Second surface for the grid
 blockSize = 30
-gridSurface = pygame.Surface((screen_w, screen_h),pygame.SRCALPHA, 32)
+gridSurface = pygame.Surface((screen_w, screen_h), pygame.SRCALPHA, 32)
 obs_map_arr = numpy.zeros((int(screen_h/blockSize), int(screen_w/blockSize)))
 
 # Obstacles
@@ -216,7 +226,7 @@ earth2 = pygame.image.load('earth_flip.png').convert_alpha()
 earth_ani = [earth1, earth2]
 earth = earth_ani[earth_index]
 earth_rect = earth.get_rect(center=((screen_w, screen_h/2)))
-    # center=((screen_w), random.randint(256, screen_h-256)))
+# center=((screen_w), random.randint(256, screen_h-256)))
 earth_mask = pygame.mask.from_surface(earth)
 
 # Player
@@ -225,7 +235,7 @@ playerX = 30
 playerY = 330
 playerX_change = 0
 playerY_change = 0
-collide_rect_clr = (0,0,255,100)
+collide_rect_clr = (0, 0, 255, 100)
 player_std = pygame.image.load('spacecraft_std.png').convert_alpha()
 player_agnt_slw = pygame.image.load('spacecraft_slow.png').convert_alpha()
 player_agnt_move = pygame.image.load('spacecraft_move.png').convert_alpha()
@@ -241,10 +251,19 @@ player_agent_mask = pygame.mask.from_surface(player_agnt)
 player_agnt_up = pygame.image.load('spacecraft.png').convert_alpha()
 player_agnt_up = pygame.transform.rotozoom(player_agnt_up, 90, 2)
 player_agnt_up_rect = player_agnt_up.get_rect(center=(538, 300))
-message = font.render('Press R to run      Press G to show grid', False, 'black')
+message = font.render(
+    'Press R to run      Press G to show grid', False, 'black')
 message_rect = message.get_rect(bottomleft=(50, 550))
 time_score = 0
 game_message = ''
+
+# Generate records
+f = open("aip_records.csv", "a")
+# f.write("Date-Time,Algorithm,Goal found,Total time,Time elapsed,Memory usage,Peak Memory usage")
+path_found = False
+time_elapsed = current_mem = peak_mem = 0
+gen_rec_flag = True
+algorithm = "A-Star"
 
 # Explotion
 explotion_index = 0
@@ -299,9 +318,9 @@ while running:
     # Goal - Earth
     earth_animation()
     screen.blit(earth, earth_rect)
-    
+
     obstcle_map_arr = drawGrid()
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -329,11 +348,11 @@ while running:
                         plan_path()
                         auto_path_inc = 0
                         path_find_flag = False
-                    
+
                     if path_found:
                         auto_pilot = True
                         print("Auto pilot on")
-                    
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     playerX_change = 0
@@ -363,8 +382,8 @@ while running:
         screen.blit(player_agnt, player_agnt_rect)
         screen.blit(explotion, explotion_rect)
         if show_grid_flag:
-            screen.blit(gridSurface,(0,0))
-        
+            screen.blit(gridSurface, (0, 0))
+
         if is_collided:
             freeze_movement = True
             end_screen_counter += 1
@@ -375,7 +394,7 @@ while running:
 
         if not is_collided:
             if collided(player_agent_mask, obs_plnt_1[2], calc_offset(player_agnt_rect, obs_plnt_1[1])) or collided(player_agent_mask, obs_plnt_2[2], calc_offset(player_agnt_rect, obs_plnt_2[1])) or collided(player_agent_mask, obs_plnt_3[2], calc_offset(player_agnt_rect, obs_plnt_3[1])) or collided(player_agent_mask, obs_plnt_4[2], calc_offset(player_agnt_rect, obs_plnt_4[1])) or collided(player_agent_mask, obs_ast_1[2], calc_offset(player_agnt_rect, obs_ast_1[1])) or collided(player_agent_mask, obs_ast_2[2], calc_offset(player_agnt_rect, obs_ast_2[1])) or collided(player_agent_mask, obs_ast_3[2], calc_offset(player_agnt_rect, obs_ast_3[1])) or collided(player_agent_mask, obs_ast_4[2], calc_offset(player_agnt_rect, obs_ast_4[1])):
-                
+
                 display_time_score = time_score
                 game_message = 'Game Over - Collision'
                 is_collided = True
@@ -387,7 +406,7 @@ while running:
         if auto_path_inc >= len(auto_path_x):
             auto_path_inc = 0
         if len(auto_path_x) > 0 and auto_pilot:
-            if move_player(auto_path_x[int(auto_path_inc)]*blockSize,auto_path_y[int(auto_path_inc)]*blockSize):
+            if move_player(auto_path_x[int(auto_path_inc)]*blockSize, auto_path_y[int(auto_path_inc)]*blockSize):
                 auto_path_inc += 1
     else:
         screen.fill((94, 129, 162))
@@ -405,7 +424,9 @@ while running:
         screen.blit(game_msg_surf, game_msg_surf_rect)
         if time_score > 0:
             screen.blit(time_score_surf, time_score_surf_rect)
+            if gen_rec_flag:
+                f.write("\n"+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+","+algorithm+","+str(path_found)+","+ str(display_time_score)+","+str(time_elapsed)+","+str(current_mem/10**6)+","+str(peak_mem/10**6))
+                gen_rec_flag = False
 
-        
     pygame.display.update()
     clock.tick(frame_rate)
