@@ -81,7 +81,8 @@ def respawn_player():
     player_move_std()
     player_agnt_rect.x = 30
     player_agnt_rect.y = 330
-    earth_rect.y = random.randint(50, screen_h-256)
+    # earth_rect.y = random.randint(50, screen_h-256)
+    earth_rect.y = screen_h/2
     stat_velo = 0
     explosion_animation((screen_w+100, screen_h+100))
     start_time = pygame.time.get_ticks()
@@ -214,7 +215,7 @@ earth1 = pygame.image.load('earth.png').convert_alpha()
 earth2 = pygame.image.load('earth_flip.png').convert_alpha()
 earth_ani = [earth1, earth2]
 earth = earth_ani[earth_index]
-earth_rect = earth.get_rect(center=((screen_w, screen_h/3)))
+earth_rect = earth.get_rect(center=((screen_w, screen_h/2)))
     # center=((screen_w), random.randint(256, screen_h-256)))
 earth_mask = pygame.mask.from_surface(earth)
 
