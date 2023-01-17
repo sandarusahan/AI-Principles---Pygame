@@ -183,7 +183,20 @@ def plan_path():
     print(
         f"Memory usage: {current_mem / 10**6}MB; Peak memory: {peak_mem / 10**6}MB")
     tracemalloc.stop()
+    if path_found:
+        coords = generate_coordinates(auto_path_x, auto_path_y)
+        print(coords)
+        print(len(coords))
 
+def generate_coordinates(x,y):
+    global blockSize
+    coordinates = []
+    for i in range(0,len(x)):
+        coordinates.append((x[i],y[i]))
+        rect = pygame.Rect(x[i]*blockSize, y[i]*blockSize, blockSize, blockSize)
+        pygame.draw.rect(gridSurface, 'green', rect)
+
+    return coordinates
 
 # Intialize the pygame
 pygame.init()
