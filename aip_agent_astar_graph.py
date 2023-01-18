@@ -3,7 +3,7 @@ import pygame
 import random
 import numpy
 import sys
-import AStar
+import AStar_graph_search
 import tracemalloc
 import time
 
@@ -302,7 +302,7 @@ display_time_score = 0
 show_grid_flag = False
 path_find_flag = True
 # Instantiating UCS algorithn class
-ucs = AStar.AStar(1, 1)
+ucs = AStar_graph_search.AStar(1, 1)
 auto_path_x = []
 auto_path_y = []
 auto_path_inc = 0
