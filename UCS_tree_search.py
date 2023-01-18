@@ -1,12 +1,13 @@
 import math
 
+
 class UCS_Algorithm:
 
     def __init__(self, resolution, robot_radius):
 
         self.obstacle_map = None
         self.resolution = resolution
-        self.robot_radius = robot_radius # agent size in grids cells
+        self.robot_radius = robot_radius  # agent size in grids cells
 
         self.ox = None
         self.oy = None
@@ -80,12 +81,12 @@ class UCS_Algorithm:
                 # checking if node is valid
                 if not self.verify_node(node):
                     continue
-                
-###################### Tree Search ##########################s
+
+# Tree Search ##########################s
                 open_set[n_id] = node
                 closed_set[n_id] = node
                 node.parent = current
-                algorithm = "USC Tree"
+                algorithm = "UCS Tree"
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()

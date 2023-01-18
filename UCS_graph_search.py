@@ -88,7 +88,7 @@ class UCS_Algorithm:
                     if open_set[n_id].cost > node.cost:
                         # This path is the best until now. record it!
                         open_set[n_id] = node
-                algorithm = "USC Graph"
+                algorithm = "UCS Graph"
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()
