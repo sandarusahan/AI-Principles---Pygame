@@ -22,18 +22,18 @@ The game can be started by running below files.
 
 # Required
 
-pip install pygame
+<br>pip install pygame
 
 # Controls
 
-When game is not active:
+<br>When game is not active:
 
-r - Start game (without auto pilot)
-a - Start game with auto pilot (Spacecraft starts to find the goal on its own)
+<br>r - Start game (without auto pilot)
+<br>a - Start game with auto pilot (Spacecraft starts to find the goal on its own)
 
-When game is active:
+<br>When game is active:
 
-r - Reset game
-a - Start auto pilot
-g - Show grid with path
-(arrows) - Control spacecraft manually
+<br>r - Reset game
+<br>a - Start auto pilot
+<br>g - Show grid with path
+<br>(arrows) - Control spacecraft manually
