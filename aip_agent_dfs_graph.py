@@ -1,10 +1,10 @@
+import datetime
 import pygame
 import random , numpy
 import sys
-import UCS
+import DFS_graph_search
 import tracemalloc
 import time
-import datetime
 
 def display_time():
     current_time = (pygame.time.get_ticks() - start_time)/1000
@@ -75,15 +75,14 @@ def player_move_std():
 
 
 def respawn_player():
-    global playerX_change, playerY_change, start_time, stat_velo, end_screen_counter, freeze_movement, is_collided, display_time_score, auto_pilot, path_find_flag, gen_rec_flag
+    global playerX_change, playerY_change, start_time, stat_velo, end_screen_counter, freeze_movement, is_collided, display_time_score, auto_pilot, path_find_flag
 
     playerX_change = 0
     playerY_change = 0
     player_move_std()
     player_agnt_rect.x = 30
     player_agnt_rect.y = 330
-    # earth_rect.y = random.randint(50, screen_h-256)
-    earth_rect.y = screen_h/2
+    earth_rect.y = random.randint(50, screen_h-256)
     stat_velo = 0
     explosion_animation((screen_w+100, screen_h+100))
     start_time = pygame.time.get_ticks()
@@ -93,7 +92,6 @@ def respawn_player():
     display_time_score = 0
     auto_pilot = False
     path_find_flag = True
-    gen_rec_flag = True
 
 
 def create_obstacle(image, cordinates):
@@ -168,8 +166,9 @@ def plan_path():
     global auto_path_x, auto_path_y, path_found, time_elapsed, current_mem, peak_mem, algorithm
     tracemalloc.start()
     start = time.time()
-    auto_path_x, auto_path_y, path_found, algorithm = ucs.start_with_ucs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
-    # print(auto_path_x, auto_path_y, path_found)
+
+    auto_path_x, auto_path_y, path_found, algorithm = dfs.start_with_dfs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
+    print(auto_path_x, auto_path_y, path_found)
     end = time.time()
     time_elapsed = end - start
     print("time elapsed", time_elapsed)
@@ -177,7 +176,6 @@ def plan_path():
     current_mem, peak_mem = tracemalloc.get_traced_memory()
     print(f"Memory usage: {current_mem / 10**6}MB; Peak memory: {peak_mem / 10**6}MB")
     tracemalloc.stop()
-
     if path_found:
         coords = generate_coordinates(auto_path_x, auto_path_y)
         print(coords)
@@ -192,6 +190,7 @@ def generate_coordinates(x,y):
         pygame.draw.rect(gridSurface, 'green', rect)
 
     return coordinates
+
 # Intialize the pygame
 pygame.init()
 clock = pygame.time.Clock()
@@ -212,7 +211,7 @@ frame_rate = 60
 background = pygame.image.load('space_bak2.png').convert()
 
 # Second surface for the grid
-blockSize = 30 # 30 is recommended 
+blockSize = 30
 gridSurface = pygame.Surface((screen_w, screen_h),pygame.SRCALPHA, 32)
 obs_map_arr = numpy.zeros((int(screen_h/blockSize), int(screen_w/blockSize)))
 
@@ -232,7 +231,7 @@ earth1 = pygame.image.load('earth.png').convert_alpha()
 earth2 = pygame.image.load('earth_flip.png').convert_alpha()
 earth_ani = [earth1, earth2]
 earth = earth_ani[earth_index]
-earth_rect = earth.get_rect(center=((screen_w, screen_h/2)))
+earth_rect = earth.get_rect(center=((screen_w, screen_h/3)))
     # center=((screen_w), random.randint(256, screen_h-256)))
 earth_mask = pygame.mask.from_surface(earth)
 
@@ -269,7 +268,8 @@ f = open("aip_records.csv", "a")
 path_found = False
 time_elapsed = current_mem = peak_mem = 0
 gen_rec_flag = True
-algorithm = ""
+algorithm = "DFS"
+
 # Explotion
 explotion_index = 0
 exp1 = pygame.image.load('explotion1.png').convert_alpha()
@@ -294,7 +294,8 @@ display_time_score = 0
 show_grid_flag = False
 path_find_flag = True
 # Instantiating UCS algorithn class
-ucs = UCS.UCS_Algorithm(1, 1)
+# ucs = UCS.UCS_Algorithm(1, 1)
+dfs = DFS_graph_search.DFS_Algorithm(1,1)
 auto_path_x = []
 auto_path_y = []
 auto_path_inc = 0
@@ -357,6 +358,7 @@ while running:
                     if path_found:
                         auto_pilot = True
                         print("Auto pilot on")
+                    # print(auto_path_x, auto_path_y)
                     
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
@@ -432,8 +434,6 @@ while running:
             if gen_rec_flag:
                 f.write("\n"+datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")+","+algorithm+","+str(path_found)+","+ str(display_time_score)+","+str(time_elapsed)+","+str(current_mem/10**6)+","+str(peak_mem/10**6))
                 gen_rec_flag = False
-
-        
         
     pygame.display.update()
     clock.tick(frame_rate)
