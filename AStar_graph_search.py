@@ -39,6 +39,8 @@ class AStar:
         open_set[self.calc_index(start_node)] = start_node
 
         while 1:
+            if len(open_set) == 0:
+                break
             
             c_id = min(open_set, key=lambda o: open_set[o].cost + self.calc_heuristic_m(goal_node, open_set[ o]))
             current = open_set[c_id]
@@ -84,16 +86,13 @@ class AStar:
                     if open_set[n_id].cost > node.cost:  
                         # This path is the best until now. record it!
                         open_set[n_id] = node
-######################Tree Search ##########################s                
-                # open_set[n_id] = node
-                # closed_set[n_id] = node
-                # node.parent = current
+                algorithm = "Astar Graph"
 
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()
         ry.reverse()
-        return rx, ry, goal_reached
+        return rx, ry, goal_reached, algorithm
 
     @staticmethod
     ## calculate heuristic value by using Pythagorean Theorem - Euclidean Heuristic

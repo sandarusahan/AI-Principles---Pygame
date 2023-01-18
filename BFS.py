@@ -48,7 +48,7 @@ class BFS_Algorithm:
                 break
             
 
-            current = open_set.pop(list(open_set.keys())[-1])
+            current = open_set.pop(list(open_set.keys())[0])
             c_id = self.calc_index(current)
             closed_set[c_id] = current
 
@@ -86,13 +86,14 @@ class BFS_Algorithm:
             ######################Tree Search ##########################
                 # open_set[n_id] = node
                 # closed_set[n_id] = node
-                # node.parent = current         	
+                # node.parent = current
+                # algorithm = "BFS Tree"       	
  
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()
         ry.reverse()
-        return rx, ry, goal_reached
+        return rx, ry, goal_reached, algorithm
 
     @staticmethod
     def get_motion_model_4n():

@@ -3,7 +3,7 @@ import pygame
 import random
 import numpy
 import sys
-import AStar
+import AStar_graph_search
 import tracemalloc
 import time
 
@@ -169,10 +169,10 @@ def move_player(x, y):
 
 
 def plan_path():
-    global auto_path_x, auto_path_y, path_found, path_found, time_elapsed, current_mem, peak_mem
+    global auto_path_x, auto_path_y, path_found, path_found, time_elapsed, current_mem, peak_mem, algorithm
     tracemalloc.start()
     start = time.time()
-    auto_path_x, auto_path_y, path_found = ucs.start_with_astar(int(player_agnt_rect.x/blockSize), int(
+    auto_path_x, auto_path_y, path_found, algorithm = ucs.start_with_astar(int(player_agnt_rect.x/blockSize), int(
         player_agnt_rect.y/blockSize), int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
     print(auto_path_x, auto_path_y, path_found)
     end = time.time()
@@ -302,7 +302,7 @@ display_time_score = 0
 show_grid_flag = False
 path_find_flag = True
 # Instantiating UCS algorithn class
-ucs = AStar.AStar(1, 1)
+ucs = AStar_graph_search.AStar(1, 1)
 auto_path_x = []
 auto_path_y = []
 auto_path_inc = 0
