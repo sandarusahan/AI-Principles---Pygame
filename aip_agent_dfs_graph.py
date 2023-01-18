@@ -257,7 +257,7 @@ player_agent_mask = pygame.mask.from_surface(player_agnt)
 player_agnt_up = pygame.image.load('spacecraft.png').convert_alpha()
 player_agnt_up = pygame.transform.rotozoom(player_agnt_up, 90, 2)
 player_agnt_up_rect = player_agnt_up.get_rect(center=(538, 300))
-message = font.render('Press R to run      Press G to show grid', False, 'black')
+message = font.render('Press A to run      Press G to show grid', False, 'black')
 message_rect = message.get_rect(bottomleft=(50, 550))
 time_score = 0
 game_message = ''
