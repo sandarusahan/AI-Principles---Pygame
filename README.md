@@ -8,32 +8,32 @@ Each algorithm has it's own copy of the game which can be found by the file name
 
 The game can be started by running below files.
 
-File name	                |Algorithm	    |Tree/Graph
---------------------------------------------------------
-aip_agent_astar_graph.py    |A star	        |Graph
-aip_agent_astar_tree.py	    |A star	        |Tree
-aip_agent_bfs_graph.py	    |BFS	        |Graph
-aip_agent_bfs_tree.py	    |BFS	        |Tree
-aip_agent_dfs_graph.py	    |DFS	        |Graph
-aip_agent_dfs_tree.py	    |DFS	        |Tree
-aip_agent_ucs_graph.py	    |UCS	        |Graph
-aip_agent_ucs_tree.py	    |UCS	        |Tree
+|            <br>**File name**       	|    <br>**Algorithm** 	|    <br>**Tree/Graph**	|
+|:----------------------------------:	|---------------------	|----------------------	|
+|    <br>aip_agent_astar_graph.py    	|    <br>A star       	|    <br>Graph         	|
+|    <br>aip_agent_astar_tree.py     	|    <br>A star       	|    <br>Tree          	|
+|    <br>aip_agent_bfs_graph.py      	|    <br>BFS          	|    <br>Graph         	|
+|    <br>aip_agent_bfs_tree.py       	|    <br>BFS          	|    <br>Tree          	|
+|    <br>aip_agent_dfs_graph.py      	|    <br>DFS          	|    <br>Graph         	|
+|    <br>aip_agent_dfs_tree.py       	|    <br>DFS          	|    <br>Tree          	|
+|    <br>aip_agent_ucs_graph.py      	|    <br>UCS          	|    <br>Graph         	|
+|    <br>aip_agent_ucs_tree.py       	|    <br>UCS          	|    <br>Tree          	|
 
 
 # Required
 
-pip install pygame
+<br>pip install pygame
 
 # Controls
 
-When game is not active:
+<br>When game is not active:
 
-r - Start game (without auto pilot)
-a - Start game with auto pilot (Spacecraft starts to find the goal on its own)
+<br>r - Start game (without auto pilot)
+<br>a - Start game with auto pilot (Spacecraft starts to find the goal on its own)
 
-When game is active:
+<br>When game is active:
 
-r - Reset game
-a - Start auto pilot
-g - Show grid with path
-(arrows) - Control spacecraft manually
+<br>r - Reset game
+<br>a - Start auto pilot
+<br>g - Show grid with path
+<br>(arrows) - Control spacecraft manually
