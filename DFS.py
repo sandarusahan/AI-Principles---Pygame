@@ -77,21 +77,23 @@ class DFS_Algorithm:
 
             ######################Graph Search ##########################
 
-                if n_id not in closed_set:
-                    open_set[n_id] = node
-                    closed_set[n_id] = node
-                    node.parent = current
+                # if n_id not in closed_set:
+                #     open_set[n_id] = node
+                #     closed_set[n_id] = node
+                #     node.parent = current
+                # algorithm = "DFS Graph"
             
             ######################Tree Search ##########################
-                # open_set[n_id] = node
-                # closed_set[n_id] = node
-                # node.parent = current         	
+                open_set[n_id] = node
+                closed_set[n_id] = node
+                node.parent = current  
+                algorithm = "DFS Tree"       	
  
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
         rx.reverse()
         ry.reverse()
-        return rx, ry, goal_reached
+        return rx, ry, goal_reached, algorithm
 
     @staticmethod
     def get_motion_model_4n():

@@ -166,7 +166,7 @@ def plan_path():
     global auto_path_x, auto_path_y, path_found,time_elapsed, current_mem, peak_mem, algorithm
     tracemalloc.start()
     start = time.time()
-    auto_path_x, auto_path_y, path_found = bfs.start_with_bfs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
+    auto_path_x, auto_path_y, path_found, algorithm = bfs.start_with_bfs(int(player_agnt_rect.x/blockSize),int(player_agnt_rect.y/blockSize),int((earth_rect.centerx/blockSize)-3), int(earth_rect.centery/blockSize), obstcle_map_arr)
     print(auto_path_x, auto_path_y, path_found)
     end = time.time()
     time_elapsed = end - start
