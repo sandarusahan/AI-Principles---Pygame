@@ -74,20 +74,13 @@ class DFS_Algorithm:
                 if not self.verify_node(node):                     
                     continue
 
-
             ######################Graph Search ##########################
 
-                # if n_id not in closed_set:
-                #     open_set[n_id] = node
-                #     closed_set[n_id] = node
-                #     node.parent = current
-                # algorithm = "DFS Graph"
-            
-            ######################Tree Search ##########################
-                open_set[n_id] = node
-                closed_set[n_id] = node
-                node.parent = current  
-                algorithm = "DFS Tree"       	
+                if n_id not in closed_set:
+                    open_set[n_id] = node
+                    closed_set[n_id] = node
+                    node.parent = current
+                algorithm = "DFS Graph"	
  
 
         rx, ry = self.calc_final_path(goal_node, closed_set)

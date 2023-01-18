@@ -2,7 +2,7 @@ import datetime
 import pygame
 import random , numpy
 import sys
-import DFS
+import DFS_tree_search
 import tracemalloc
 import time
 
@@ -295,7 +295,7 @@ show_grid_flag = False
 path_find_flag = True
 # Instantiating UCS algorithn class
 # ucs = UCS.UCS_Algorithm(1, 1)
-dfs = DFS.DFS_Algorithm(1,1)
+dfs = DFS_tree_search.DFS_Algorithm(1,1)
 auto_path_x = []
 auto_path_y = []
 auto_path_inc = 0

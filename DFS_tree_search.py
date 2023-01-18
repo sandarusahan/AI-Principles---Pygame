@@ -1,6 +1,6 @@
 import math
 
-class BFS_Algorithm:
+class DFS_Algorithm:
     
     def __init__(self, resolution, robot_radius):
         
@@ -8,14 +8,14 @@ class BFS_Algorithm:
         self.resolution = resolution
         self.robot_radius = robot_radius # agent size in grids cells
 
-        self.ox = None
-        self.oy = None
-        self.min_x = None
-        self.min_y = None
-        self.max_x = None
-        self.max_y = None
-        self.x_width = None
-        self.y_width = None
+        # self.ox = None
+        # self.oy = None
+        # self.min_x = None
+        # self.min_y = None
+        # self.max_x = None
+        # self.max_y = None
+        # self.x_width = None
+        # self.y_width = None
 
         self.motion = self.get_motion_model_4n()
         # self.motion = self.get_motion_model_8n()
@@ -29,7 +29,7 @@ class BFS_Algorithm:
             self.parent = parent
 
     
-    def start_with_bfs(self, sx, sy, gx, gy, obs_map_arr):
+    def start_with_dfs(self, sx, sy, gx, gy, obs_map_arr):
         goal_reached = False
         self.calc_obstacle_map(obs_map_arr)
         start_node = self.Node(self.calc_xy_index(sx, self.min_x),
@@ -48,9 +48,8 @@ class BFS_Algorithm:
                 break
             
 
-            current = open_set.pop(list(open_set.keys())[0])
+            current = open_set.pop(list(open_set.keys())[-1])
             c_id = self.calc_index(current)
-            closed_set[c_id] = current
 
 
             # checking if goal is reached, break loop if it does
@@ -75,19 +74,12 @@ class BFS_Algorithm:
                 if not self.verify_node(node):                     
                     continue
 
-
-            ######################Graph Search ##########################
-
-                if (n_id not in closed_set) and (n_id not in open_set):
-                    node.parent = current
-                    open_set[n_id] = node            
-                algorithm = "BFS Graph" 
-            
+           
             ######################Tree Search ##########################
-                # open_set[n_id] = node
-                # closed_set[n_id] = node
-                # node.parent = current
-                # algorithm = "BFS Tree"       	
+                open_set[n_id] = node
+                closed_set[n_id] = node
+                node.parent = current  
+                algorithm = "DFS Tree"       	
  
 
         rx, ry = self.calc_final_path(goal_node, closed_set)
