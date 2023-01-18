@@ -376,6 +376,17 @@ while running:
                 if event.key == pygame.K_r:
                     game_active = True
                     respawn_player()
+                if event.key == pygame.K_a:
+                    game_active = True
+                    respawn_player()
+                    if path_find_flag:
+                        plan_path()
+                        auto_path_inc = 0
+                        path_find_flag = False
+
+                    if path_found:
+                        auto_pilot = True
+                        print("Auto pilot on")
 
     if game_active:
         time_score = display_time()

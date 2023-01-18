@@ -1,12 +1,13 @@
 import math
 
+
 class UCS_Algorithm:
 
     def __init__(self, resolution, robot_radius):
 
         self.obstacle_map = None
         self.resolution = resolution
-        self.robot_radius = robot_radius # agent size in grids cells
+        self.robot_radius = robot_radius  # agent size in grids cells
 
         self.ox = None
         self.oy = None
@@ -39,11 +40,11 @@ class UCS_Algorithm:
         open_set[self.calc_index(start_node)] = start_node
 
         while 1:
-            if len(open_set) > 0:
-                c_id = min(open_set, key=lambda o: open_set[o].cost)
-            else:
+            if not len(open_set) > 0:
                 print("No path found")
-                return [], [], False
+                break
+
+            c_id = min(open_set, key=lambda o: open_set[o].cost)
             current = open_set[c_id]
             # checking if goal is reached, break loop if it does
             if current.x == goal_node.x and current.y == goal_node.y:
